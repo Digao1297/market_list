@@ -10,8 +10,7 @@ import {
 import AppLoading from "expo-app-loading";
 
 import { theme } from "./context";
-import { Routes } from "./routes";
-import { Auth } from "./features";
+import { AppRoutes } from "./routes/app.routes";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -26,9 +25,7 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Auth.Provider>
-        <Routes />
-      </Auth.Provider>
+      <AppRoutes />
     </ThemeProvider>
   );
 }
