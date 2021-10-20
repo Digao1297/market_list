@@ -11,6 +11,10 @@ import AppLoading from "expo-app-loading";
 
 import { theme } from "./context";
 import { AppRoutes } from "./routes/app.routes";
+import { CartProvider } from "./context";
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs(["timer"]);
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -25,7 +29,9 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppRoutes />
+      <CartProvider>
+        <AppRoutes />
+      </CartProvider>
     </ThemeProvider>
   );
 }

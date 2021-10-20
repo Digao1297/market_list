@@ -1,7 +1,17 @@
 import theme from "./styles/theme";
-import Firebase from "./firebase";
 import { ButtonForm } from "./components/form/button";
 import { InputForm } from "./components/form/input";
-import { HighlightCard } from "./components/highlightcard";
-
-export { theme, Firebase, InputForm, ButtonForm, HighlightCard };
+import { Product } from "./components/product";
+import { CartProvider, useCart } from "./hooks/cart_hook";
+import { firestore } from "./firebase";
+import { LoadIndicator } from "./components/loadIndicator";
+export {
+  theme,
+  InputForm,
+  ButtonForm,
+  Product,
+  CartProvider,
+  useCart,
+  firestore,
+  LoadIndicator,
+};

@@ -1,29 +1,91 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 import {
   Container,
   Header,
-  Title,
-  Cart,
-  Categories,
-  CategoriesTitle,
+  Search,
+  ProductTitle,
+  AddButton,
+  AddButtonIcon,
+  FooterList,
 } from "./styles";
 
-import { InputForm, HighlightCard } from "../../../context";
-import pineapple from "../../../../assets/pineapple.png";
+import { Cart } from "../components/cart";
 
-export default function DashboardScreen() {
+import { InputForm, Product, firestore, LoadIndicator } from "../../../context";
+import { FlatList } from "react-native";
+import { RFPercentage } from "react-native-responsive-fontsize";
+
+export default function DashboardScreen({ navigation }) {
+  const { control, handleSubmit } = useForm();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  async function handlerLoadData() {
+    setLoading(true);
+    try {
+      await firestore.collection("products").onSnapshot((snapshot) => {
+        let list = [];
+
+        snapshot.forEach((doc) => {
+          let product = doc.data();
+          product.id = doc.id;
+
+          list.push(product);
+        });
+        return setData(list);
+      });
+    } catch (error) {
+      Alert.alert("Erro ao carregar os dados");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handlerOpenCart() {
+    navigation.navigate("cart");
+  }
+
+  useEffect(() => {
+    navigation.addListener("focus", () => {
+      handlerLoadData();
+    });
+  }, []);
+
   return (
     <Container>
       <Header>
-        <Title>Bom para você. {"\n"}Ótimo para a vida</Title>
-        <Cart name="shoppingcart" />
+        <Search>
+          <InputForm
+            control={control}
+            name="search"
+            placeholder="O que você está procurando "
+          />
+        </Search>
+        <Cart name="shoppingcart" onPress={() => handlerOpenCart()} />
       </Header>
 
-      <Categories>
-        <CategoriesTitle>Categorias</CategoriesTitle>
-      </Categories>
-      <HighlightCard image={pineapple} />
+      <ProductTitle>Produtos</ProductTitle>
+
+      {loading ? (
+        <LoadIndicator />
+      ) : (
+        <FlatList
+          data={data}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => <Product data={item} isCart={true} />}
+          showsVerticalScrollIndicator={false}
+          style={{ height: RFPercentage(80) }}
+          ListFooterComponent={() => (
+            <FooterList>
+              <AddButton onPress={() => navigation.navigate("product")}>
+                <AddButtonIcon name="plus" />
+              </AddButton>
+            </FooterList>
+          )}
+        />
+      )}
     </Container>
   );
 }
