@@ -5,6 +5,7 @@ import { Product } from "./components/product";
 import { CartProvider, useCart } from "./hooks/cart_hook";
 import { firestore } from "./firebase";
 import { LoadIndicator } from "./components/loadIndicator";
+import { SearchInput } from "./components/form/searchInput";
 export {
   theme,
   InputForm,
@@ -14,4 +15,5 @@ export {
   useCart,
   firestore,
   LoadIndicator,
+  SearchInput,
 };

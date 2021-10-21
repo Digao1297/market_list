@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,25 +21,49 @@ const schema = Yup.object().shape({
     .required("O preço é obrigatório"),
 });
 
-export default function ProductScreen({ navigation }) {
+export default function ProductScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  async function handlerRegister(form) {
+  useEffect(() => {
+    if (ParamsisNotUndefined(route.params)) {
+      setValue("name", route.params.name);
+      setValue("price", route.params.price.toString());
+    }
+  }, []);
+
+  function ParamsisNotUndefined(params) {
+    return (
+      params != undefined &&
+      params.id != undefined &&
+      params.name != undefined &&
+      params.price != undefined
+    );
+  }
+
+  async function handlerRegisterOrUpdate(form) {
     setLoading(true);
     try {
-      await firestore.collection("products").add(form);
+      if (ParamsisNotUndefined(route.params)) {
+        await firestore
+          .collection("products")
+          .doc(route.params.id)
+          .update(form);
+      } else {
+        await firestore.collection("products").add(form);
+      }
       navigation.goBack();
     } catch (error) {
       console.log(error.toString());
-      Alert.alert("Erro ao salvar os dados");
+      Alert.alert("Erro ao atualizar os dados");
     } finally {
       setLoading(false);
     }
@@ -77,7 +101,7 @@ export default function ProductScreen({ navigation }) {
           ) : (
             <ButtonForm
               title="Salvar"
-              onPress={handleSubmit(handlerRegister)}
+              onPress={handleSubmit(handlerRegisterOrUpdate)}
             />
           )}
         </Form>

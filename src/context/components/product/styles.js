@@ -3,7 +3,7 @@ import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import { AntDesign } from "@expo/vector-icons";
 
-export const Container = styled.View`
+export const Container = styled(TouchableOpacity)`
   width: 100%;
 
   background-color: ${({ theme }) => theme.colors.shape};

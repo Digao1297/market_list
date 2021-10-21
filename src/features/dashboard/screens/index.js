@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
 
 import {
   Container,
@@ -13,13 +12,18 @@ import {
 
 import { Cart } from "../components/cart";
 
-import { InputForm, Product, firestore, LoadIndicator } from "../../../context";
-import { FlatList } from "react-native";
+import {
+  SearchInput,
+  Product,
+  firestore,
+  LoadIndicator,
+} from "../../../context";
+import { FlatList, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
 
 export default function DashboardScreen({ navigation }) {
-  const { control, handleSubmit } = useForm();
   const [data, setData] = useState([]);
+  const [listData, setListData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   async function handlerLoadData() {
@@ -34,7 +38,8 @@ export default function DashboardScreen({ navigation }) {
 
           list.push(product);
         });
-        return setData(list);
+        setData(list);
+        setListData(list);
       });
     } catch (error) {
       Alert.alert("Erro ao carregar os dados");
@@ -47,6 +52,11 @@ export default function DashboardScreen({ navigation }) {
     navigation.navigate("cart");
   }
 
+  function handlerSearchOnChange(value) {
+    const result = data.filter((x) => x.name.toLowerCase().startsWith(value));
+    setListData(result);
+  }
+
   useEffect(() => {
     navigation.addListener("focus", () => {
       handlerLoadData();
@@ -54,38 +64,41 @@ export default function DashboardScreen({ navigation }) {
   }, []);
 
   return (
-    <Container>
-      <Header>
-        <Search>
-          <InputForm
-            control={control}
-            name="search"
-            placeholder="O que você está procurando "
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <Container>
+        <Header>
+          <Search>
+            <SearchInput
+              placeholder="O que você está procurando "
+              onChangeText={handlerSearchOnChange}
+            />
+          </Search>
+          <Cart name="shoppingcart" onPress={() => handlerOpenCart()} />
+        </Header>
+
+        <ProductTitle>Produtos</ProductTitle>
+
+        {loading ? (
+          <LoadIndicator />
+        ) : (
+          <FlatList
+            data={listData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <Product data={item} isCart={true} navigation={navigation} />
+            )}
+            showsVerticalScrollIndicator={false}
+            style={{ height: RFPercentage(80) }}
+            ListFooterComponent={() => (
+              <FooterList>
+                <AddButton onPress={() => navigation.navigate("product", {})}>
+                  <AddButtonIcon name="plus" />
+                </AddButton>
+              </FooterList>
+            )}
           />
-        </Search>
-        <Cart name="shoppingcart" onPress={() => handlerOpenCart()} />
-      </Header>
-
-      <ProductTitle>Produtos</ProductTitle>
-
-      {loading ? (
-        <LoadIndicator />
-      ) : (
-        <FlatList
-          data={data}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => <Product data={item} isCart={true} />}
-          showsVerticalScrollIndicator={false}
-          style={{ height: RFPercentage(80) }}
-          ListFooterComponent={() => (
-            <FooterList>
-              <AddButton onPress={() => navigation.navigate("product")}>
-                <AddButtonIcon name="plus" />
-              </AddButton>
-            </FooterList>
-          )}
-        />
-      )}
-    </Container>
+        )}
+      </Container>
+    </TouchableWithoutFeedback>
   );
 }
