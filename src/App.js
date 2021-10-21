@@ -14,7 +14,7 @@ import { AppRoutes } from "./routes/app.routes";
 import { CartProvider } from "./context";
 import { LogBox } from "react-native";
 
-LogBox.ignoreLogs(["timer"]);
+LogBox.ignoreLogs(["timer", "perform"]);
 
 export default function App() {
   const [fontsLoaded] = useFonts({

@@ -30,7 +30,7 @@ export function CartScreen({ navigation }) {
       const date = new Date();
       await firestore.collection("cart").add({
         products: JSON.stringify(cart),
-        total,
+        total: total.toFixed(2),
         date: `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
       });
       setCart([]);

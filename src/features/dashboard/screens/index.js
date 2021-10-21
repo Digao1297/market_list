@@ -58,9 +58,7 @@ export default function DashboardScreen({ navigation }) {
   }
 
   useEffect(() => {
-    navigation.addListener("focus", () => {
-      handlerLoadData();
-    });
+    handlerLoadData();
   }, []);
 
   return (
@@ -82,10 +80,15 @@ export default function DashboardScreen({ navigation }) {
           <LoadIndicator />
         ) : (
           <FlatList
-            data={listData}
+            data={data}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <Product data={item} isCart={true} navigation={navigation} />
+              <Product
+                data={item}
+                isCart={true}
+                navigation={navigation}
+                loadData={handlerLoadData}
+              />
             )}
             showsVerticalScrollIndicator={false}
             style={{ height: RFPercentage(80) }}
