@@ -80,7 +80,7 @@ export default function DashboardScreen({ navigation }) {
           <LoadIndicator />
         ) : (
           <FlatList
-            data={data}
+            data={listData}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <Product
